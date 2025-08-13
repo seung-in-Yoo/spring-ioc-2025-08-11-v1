@@ -25,7 +25,9 @@ public class ApplicationContext {
                 return new TestPostService(repo);
 
             default:
-                throw new IllegalArgumentException("빈이 존재하지 않습니다: " + name);
+                throw new IllegalArgumentException(
+                        String.format("이름이 '%s'인 빈이 정의되어 있지 않습니다. 등록된 빈: %s", name, singletons.keySet())
+                );
         }
     }
 
