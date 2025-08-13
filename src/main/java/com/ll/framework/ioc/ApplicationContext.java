@@ -3,23 +3,35 @@ package com.ll.framework.ioc;
 import com.ll.domain.testPost.testPost.repository.TestPostRepository;
 import com.ll.domain.testPost.testPost.service.TestPostService;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class ApplicationContext {
+    private final Map<String, Object> singletons = new ConcurrentHashMap<>(); // 싱글톤 캐시 관련
     public ApplicationContext() { }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") // warning 없애기 위해서 사용 (없어도 되긴함)
     public <T> T genBean(String beanName) {
-        switch (beanName) {
-            case "testPostService":
-                return (T) new TestPostService(new TestPostRepository());
+        return (T) singletons.computeIfAbsent(beanName, this::createBeanByName); // 싱글톤 보장하여 호출
+    }
+
+    private Object createBeanByName(String name) {
+        switch (name) {
             case "testPostRepository":
-                return (T) new TestPostRepository();
+                return new TestPostRepository();
+
+            case "testPostService":
+                TestPostRepository repo = genBean("testPostRepository"); // DI 사용
+                return new TestPostService(repo);
+
             default:
-                throw new IllegalArgumentException("빈이 존재하지 않습니다: " + beanName);
+                throw new IllegalArgumentException("빈이 존재하지 않습니다: " + name);
         }
     }
 
+
     @Override
     public String toString() {
-        return "ApplicationContext{}";
+        return "ApplicationContext{singletons=" + singletons.keySet() + "}";
     }
 }
