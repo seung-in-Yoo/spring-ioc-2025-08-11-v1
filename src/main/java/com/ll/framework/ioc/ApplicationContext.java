@@ -9,25 +9,18 @@ public class ApplicationContext {
     TestPostService testPostService;
     TestFacadePostService testFacadePostService;
 
-    public ApplicationContext() {
-
-    }
-
     public <T> T genBean(String beanName) {
         if (testFacadePostService == null) {
-            if (testPostService==null) {
-                if (testPostRepository==null) testPostRepository = new TestPostRepository();
-                testPostService = new TestPostService(testPostRepository);
-            }
+            testPostRepository = new TestPostRepository();
+            testPostService = new TestPostService(testPostRepository);
             testFacadePostService = new TestFacadePostService(testPostService, testPostRepository);
         }
-
 
         return (T) switch (beanName) {
             case "testPostService" -> testPostService;
             case "testPostRepository" -> testPostRepository;
             case "testFacadePostService" -> testFacadePostService;
-            default -> throw new IllegalStateException("Unexpected value: " + beanName);
+            default -> null;
         };
     }
 }
