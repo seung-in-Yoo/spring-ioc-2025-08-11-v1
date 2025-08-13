@@ -6,6 +6,7 @@ import com.ll.domain.testPost.testPost.service.TestPostService;
 public class ApplicationContext {
     public ApplicationContext() { }
 
+    @SuppressWarnings("unchecked")
     public <T> T genBean(String beanName) {
         switch (beanName) {
             case "testPostService":
